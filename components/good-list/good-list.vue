@@ -1,23 +1,28 @@
 <template>
-  <view class="cate-item">
-    <view class="h" v-if="isCataShow">
-      <text class="name">分类名</text>
-      <text class="desc">分类名描述</text>
+  <scroll-view class="scroll-box" scroll-y="true" @scrolltolower="scrollTolower">
+    <view class="cate-item">
+      <view class="h" v-if="isCataShow">
+        <text class="name">{{ cataInfo.front_name }}</text>
+        <text class="desc">{{ cataInfo.front_desc }}</text>
+      </view>
+      <view class="b">
+        <navigator
+          class="item"
+          :class="{ 'item-b': index % 2 === 1 }"
+          v-for="(item, index) in list"
+          :key="item.id"
+          :url="'/pkgGood/detail/detail?cataId=' + item.id"
+        >
+          <image class="img" :src="item.list_pic_url" background-size="cover"></image>
+          <text class="name">{{ item.name }}</text>
+          <text class="price">￥{{ item.retail_price }}</text>
+        </navigator>
+      </view>
     </view>
-    <view class="b">
-      <navigator
-        class="item"
-        :class="{ 'item-b': index % 2 === 1 }"
-        v-for="(item, index) in list"
-        :key="item.id"
-        :url="'/pkgGood/detail/detail?cataId=' + item.id"
-      >
-        <image class="img" :src="item.list_pic_url" background-size="cover"></image>
-        <text class="name">{{ item.name }}</text>
-        <text class="price">￥{{ item.retail_price }}</text>
-      </navigator>
-    </view>
-  </view>
+    <view v-if="loading">加载中</view>
+    <view v-if="finish && list.length">没有更多了</view>
+    <view v-if="finish && list.length === 0">没有改商品</view>
+  </scroll-view>
 </template>
 
 <script>
@@ -34,6 +39,9 @@ export default {
     cateIdNum: {
       type: [String, Number],
     },
+    cataInfo: {
+      type: Object,
+    },
   },
   data() {
     return {
@@ -45,24 +53,51 @@ export default {
       },
       count: 1,
       list: [],
+      loading: false,
+      finish: false,
     }
   },
   created() {
     this.initData()
   },
+
   methods: {
     async initData() {
-      const { count, data } = await uni.$http.get('/goods/list', this.queryData)
-      this.count = count
-      this.list = data
+      this.loading = true
+      try {
+        const { count, data } = await uni.$http.get('/goods/list', this.queryData)
+        this.count = count
+        this.list.push(...data)
+        this.loading = false
+        if (this.list.length === this.count) {
+          this.finish = true
+        } else {
+          this.queryData.page++
+        }
+      } catch (error) {
+        this.loading = false
+      }
+    },
+    scrollTolower() {
+      console.log('di')
+      if (this.loading) return
+      if (this.finish) return
+      this.initData()
     },
   },
 }
 </script>
 
 <style lang="scss">
+.scroll-box {
+  border: 5rpx solid red;
+  position: fixed;
+  top: 100rpx;
+  box-sizing: border-box;
+  height: calc(100vh - 100rpx);
+}
 .cate-item {
-  margin-top: 100rpx;
+  // margin-top: 100rpx;
   position: flex;
   height: auto;
   overflow: hidden;

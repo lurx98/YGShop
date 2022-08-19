@@ -15,8 +15,11 @@
           :placeholder="defaultKeyword.keyword || '请输入'"
           @input="getSearchList"
           @confirm="submit"
+          @focus="isShowResult = false"
         />
         <image
+          v-if="searchKeywords.length"
+          @click="delClick"
           class="del"
           src="http://nos.netease.com/mailpub/hxm/yanxuan-wap/p/20150730/style/img/icon-normal/clearIpt-f71b83e3c2.png"
         ></image>
@@ -40,6 +43,7 @@
             :key="index"
             class="item"
             hover-class="navigator-hover"
+            @click="keywordClick(item)"
           >
             {{ item }}
           </view>
@@ -55,6 +59,7 @@
             class="item"
             :class="{ active: item.is_hot === 1 }"
             hover-class="navigator-hover"
+            @click="keywordClick(item.keyword)"
           >
             {{ item.keyword }}
           </view>
@@ -62,14 +67,18 @@
       </view>
       <!-- 搜索建议 -->
       <view class="shelper-list" v-if="searchKeywords">
-        <view v-for="(item, index) in searchResult" :key="index" class="item" hover-class="navigator-hover">
+        <view
+          v-for="(item, index) in searchResult"
+          :key="index"
+          class="item"
+          hover-class="navigator-hover"
+          @click="keywordClick(item)"
+        >
           {{ item }}
         </view>
       </view>
     </view>
-    <view v-if="isShowResult" class="search-result">
-      <good-list :keyWords="searchKeywords"></good-list>
-    </view>
+    <view v-if="isShowResult" class="search-result"><good-list :keyWords="searchKeywords"></good-list></view>
   </scroll-view>
 </template>
 
@@ -79,7 +88,7 @@ export default {
     return {
       defaultKeyword: {},
       hotKeywordList: [],
-      historyKeywordList: [],
+      historyKeywordList: uni.getStorageSync('history') || [],
       searchKeywords: '',
       isShowResult: false,
       timer: null,
@@ -88,6 +97,15 @@ export default {
   },
   onLoad() {
     this.initData()
+  },
+  watch: {
+    historyKeywordList: {
+      deep: true,
+      handler() {
+        console.log('11')
+        uni.setStorageSync('history', this.historyKeywordList)
+      },
+    },
   },
   methods: {
     async initData() {
@@ -109,6 +127,22 @@ export default {
     },
     submit() {
       this.isShowResult = true
+      if (!this.searchKeywords.trim()) this.searchKeywords = this.defaultKeyword.keyword
+      const idx = this.historyKeywordList.findIndex(item => item === this.searchKeywords)
+      if (idx > -1) this.historyKeywordList.splice(idx, 1)
+      this.historyKeywordList.unshift(this.searchKeywords)
+    },
+    delClick() {
+      this.searchKeywords = ''
+      this.isShowResult = false
+    },
+    keywordClick(val) {
+      console.log(val)
+      this.searchKeywords = val
+      this.isShowResult = true
+      const idx = this.historyKeywordList.findIndex(item => item === this.searchKeywords)
+      if (idx > -1) this.historyKeywordList.splice(idx, 1)
+      this.historyKeywordList.unshift(this.searchKeywords)
     },
   },
 }

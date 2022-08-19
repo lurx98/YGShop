@@ -1,42 +1,36 @@
 <template>
   <view>
-<view class="container">
-  <!-- 轮播图 -->
-  <swiper class="goodsimgs" indicator-dots="true" autoplay="true" interval="3000" duration="1000">
-    <swiper-item>
-      <image src="/static/demo/idx-banner.jpg" background-size="cover"></image>
-    </swiper-item>
-    <swiper-item>
-      <image src="/static/demo/idx-banner.jpg" background-size="cover"></image>
-    </swiper-item>
-    <swiper-item>
-      <image src="/static/demo/idx-banner.jpg" background-size="cover"></image>
-    </swiper-item>
-  </swiper>
-  <!-- 小标签 -->
-  <view class="service-policy">
-    <view class="item">30天无忧退货</view>
-    <view class="item">48小时快速退款</view>
-    <view class="item">满88元免邮费</view>
-  </view>
-  <!-- 商品信息 -->
-  <view class="goods-info">
-    <view class="c">
-      <text class="name">商品名称</text>
-      <text class="desc">商品小描述</text>
-      <text class="price">￥ 商品价格</text>
-      <view class="brand">
-        <navigator url="../brandDetail/brandDetail">
-          <text>品牌名称</text>
-        </navigator>
+    <view class="container">
+      <!-- 轮播图 -->
+      <swiper class="goodsimgs" indicator-dots="true" autoplay="true" interval="3000" duration="1000">
+        <swiper-item v-for="item in gallery" :key="item.id">
+          <image :src="item.img_url" background-size="cover"></image>
+        </swiper-item>
+      </swiper>
+      <!-- 小标签 -->
+      <view class="service-policy">
+        <view class="item">30天无忧退货</view>
+        <view class="item">48小时快速退款</view>
+        <view class="item">满88元免邮费</view>
       </view>
-    </view>
-  </view>
-  <view class="section-nav section-attr" bindtap="switchAttrPop">
-    <view class="t">请选择规格数量</view>
-    <image class="i" src="../../static/images/address_right.png" background-size="cover"></image>
-  </view>
-  <!--<view class="section-nav section-act">
+      <!-- 商品信息 -->
+      <view class="goods-info">
+        <view class="c">
+          <text class="name">{{ info.name }}</text>
+          <text class="desc">{{ info.goods_brief }}</text>
+          <text class="price">￥ {{ info.retail_price }}</text>
+          <view class="brand" v-if="brand.name">
+            <navigator url="../brandDetail/brandDetail">
+              <text>{{ brand.name }}</text>
+            </navigator>
+          </view>
+        </view>
+      </view>
+      <view class="section-nav section-attr" bindtap="switchAttrPop">
+        <view class="t">请选择规格数量</view>
+        <image class="i" src="../../static/images/address_right.png" background-size="cover"></image>
+      </view>
+      <!--<view class="section-nav section-act">
       <view class="t">
         <view class="label">1个促销:</view>
         <view class="tag">万圣趴</view>
@@ -44,216 +38,210 @@
       </view>
       <image class="i" src="../../static/images/address_right.png" background-size="cover"></image>
     </view>-->
-  <!---评论信息-->
-  <view class="comments">
-    <view class="h">
-      <navigator url="../comment/comment">
-        <text class="t">评价(11)</text>
-        <text class="i">查看全部</text>
-      </navigator>
-    </view>
-    <view class="b">
-      <view class="item">
-        <view class="info">
-          <view class="user">
-            <image src="/static/demo/idx-brand.jpg"></image>
-            <text>昵称</text>
+      <!---评论信息-->
+      <view class="comments">
+        <view class="h">
+          <navigator url="../comment/comment">
+            <text class="t">评价({{ comment.count }})</text>
+            <text class="i">查看全部</text>
+          </navigator>
+        </view>
+        <view class="b" v-if="comment.data">
+          <view class="item">
+            <view class="info">
+              <view class="user">
+                <image :src="comment.data.avatar"></image>
+                <text>{{ comment.data.nickname }}</text>
+              </view>
+              <view class="time">{{ comment.data.add_time }}</view>
+            </view>
+            <view class="content">{{ comment.data.content }}</view>
+            <view class="imgs">
+              <image
+                v-for="(item, index) in comment.data.pic_list"
+                class="img"
+                :src="item.pic_url"
+                :key="index"
+                @click="imgShow(comment.data.pic_list, index)"
+              ></image>
+            </view>
+            <!-- <view class="spec">白色 2件</view> -->
           </view>
-          <view class="time">2021-11-22</view>
         </view>
-        <view class="content">
-          这是评论正文内容这是评论正文内容这是评论正文内容
-        </view>
-        <view class="imgs">
-          <image class="img" src="/static/demo/idx-brand.jpg"></image>
-          <image class="img" src="/static/demo/idx-brand.jpg"></image>
-          <image class="img" src="/static/demo/idx-brand.jpg"></image>
-        </view>
-        <!-- <view class="spec">白色 2件</view> -->
       </view>
-      <view class="item">
-        <view class="info">
-          <view class="user">
-            <image src="/static/demo/idx-brand.jpg"></image>
-            <text>昵称</text>
+      <view class="goods-attr">
+        <view class="t">商品参数</view>
+        <view class="l">
+          <view class="item" v-for="(item, index) in attribute" :key="index">
+            <text class="left">规格：{{ item.name }}</text>
+            <text class="right">{{ item.value }}</text>
           </view>
-          <view class="time">2021-11-22</view>
         </view>
-        <view class="content">
-          这是评论正文内容这是评论正文内容这是评论正文内容
+      </view>
+      <!-- 商品详情 -->
+      <view class="detail" v-html="info.goods_desc"></view>
+
+      <!-- 常见问题 -->
+      <view class="common-problem">
+        <view class="h">
+          <view class="line"></view>
+          <text class="title">常见问题</text>
         </view>
-        <view class="imgs">
+        <view class="b">
+          <view class="item" v-for="(item, index) in issue" :key="index">
+            <view class="question-box">
+              <text class="spot"></text>
+              <text class="question">{{ item.question }}</text>
+            </view>
+            <view class="answer">{{ item.answer }}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <!-- 商品属性参数弹框 -->
+    <view class="attr-pop-box">
+      <view class="attr-pop">
+        <view class="close"><image class="icon" src="/static/images/icon_close.png"></image></view>
+        <view class="img-info">
           <image class="img" src="/static/demo/idx-brand.jpg"></image>
-          <image class="img" src="/static/demo/idx-brand.jpg"></image>
-          <image class="img" src="/static/demo/idx-brand.jpg"></image>
+          <view class="info">
+            <view class="c">
+              <view class="p">价格：￥111</view>
+              <view class="a">已选择：红色，大</view>
+            </view>
+          </view>
         </view>
-        <!-- <view class="spec">白色 2件</view> -->
-      </view>
-    </view>
-  </view>
-  <view class="goods-attr">
-    <view class="t">商品参数</view>
-    <view class="l">
-      <view class="item">
-        <text class="left">规格：</text>
-        <text class="right">xxxx</text>
-      </view>
-      <view class="item">
-        <text class="left">规格：</text>
-        <text class="right">xxxx</text>
-      </view>
-      <view class="item">
-        <text class="left">规格：</text>
-        <text class="right">xxxx</text>
-      </view>
-    </view>
-  </view>
-  <!-- 商品详情 -->
-  <view class="detail">
-    商品详情商品详情商品详情商品详情商品详情商品详情商品详情商品详情商品详情商品详情商品详情
-  </view>
+        <view class="spec-con">
+          <view class="spec-item" v-for="(item, index) in specificationList" :key="index">
+            <view class="name">{{ item.name }}</view>
+            <view class="values">
+              <view
+                class="value"
+                :class="{ selected: checkList[index] === obj.id }"
+                v-for="(obj, inx) in item.valueList"
+                :key="inx"
+                @click="changeTab(obj, index)"
+              >
+                {{ obj.value }}
+              </view>
+            </view>
+          </view>
 
-  <!-- 常见问题 -->
-  <view class="common-problem">
-    <view class="h">
-      <view class="line"></view>
-      <text class="title">常见问题</text>
-    </view>
-    <view class="b">
-      <view class="item">
-        <view class="question-box">
-          <text class="spot"></text>
-          <text class="question">问题名称</text>
-        </view>
-        <view class="answer">
-          问题回答
-        </view>
-      </view>
-      <view class="item">
-        <view class="question-box">
-          <text class="spot"></text>
-          <text class="question">问题名称</text>
-        </view>
-        <view class="answer">
-          问题回答
-        </view>
-      </view>
-      <view class="item">
-        <view class="question-box">
-          <text class="spot"></text>
-          <text class="question">问题名称</text>
-        </view>
-        <view class="answer">
-          问题回答
+          <view class="number-item">
+            <view class="name">数量</view>
+            <view class="selnum">
+              <view class="cut">-</view>
+              <input value="1" class="number" type="number" />
+              <view class="add">+</view>
+            </view>
+          </view>
         </view>
       </view>
     </view>
+    <!-- 底部按钮区域 -->
+    <uni-goods-nav
+      class="fix-bot"
+      :fill="true"
+      :options="options"
+      :button-group="buttonGroup"
+      @click="onClick"
+      @buttonClick="buttonClick"
+    />
   </view>
-  <!-- 大家都在看，关联商品 -->
-  <view class="related-goods" >
-    <view class="h">
-      <view class="line"></view>
-      <text class="title">大家都在看</text>
-    </view>
-    <view class="b">
-      <view class="item">
-        <navigator url="/pages/goods/goods">
-          <image class="img" src="/static/demo/idx-brand.jpg" background-size="cover"></image>
-          <text class="name">名称</text>
-          <text class="price">￥111</text>
-        </navigator>
-      </view>
-      <view class="item">
-        <navigator url="/pages/goods/goods">
-          <image class="img" src="/static/demo/idx-brand.jpg" background-size="cover"></image>
-          <text class="name">名称</text>
-          <text class="price">￥111</text>
-        </navigator>
-      </view>
-      <view class="item">
-        <navigator url="/pages/goods/goods">
-          <image class="img" src="/static/demo/idx-brand.jpg" background-size="cover"></image>
-          <text class="name">名称</text>
-          <text class="price">￥111</text>
-        </navigator>
-      </view>
-    </view>
-  </view>
-</view>
-<!-- 商品属性参数弹框 -->
-<view hidden class="attr-pop-box">
-  <view class="attr-pop">
-    <view class="close" >
-      <image class="icon" src="/static/images/icon_close.png"></image>
-    </view>
-    <view class="img-info">
-      <image class="img" src="/static/demo/idx-brand.jpg"></image>
-      <view class="info">
-        <view class="c">
-          <view class="p">价格：￥111</view>
-          <view class="a" >已选择：红色，大</view>
-        </view>
-      </view>
-    </view>
-    <view class="spec-con">
-      <view class="spec-item" >
-        <view class="name">颜色</view>
-        <view class="values">
-          <view class="value selected">粉红色</view>
-          <view class="value">白色</view>
-          <view class="value">黑色</view>
-        </view>
-      </view>
-      <view class="spec-item" >
-        <view class="name">尺寸</view>
-        <view class="values">
-          <view class="value selected">大</view>
-          <view class="value">中</view>
-          <view class="value">小</view>
-        </view>
-      </view>
-
-      <view class="number-item">
-        <view class="name">数量</view>
-        <view class="selnum">
-          <view class="cut">-</view>
-          <input value="1" class="number"  type="number" />
-          <view class="add" >+</view>
-        </view>
-      </view>
-    </view>
-  </view>
-</view>
-<!-- 底部按钮区域 -->
-<view class="bottom-btn">
-  <view class="l l-collect" >
-    <image class="icon" src=""></image>
-  </view>
-  <view class="l l-cart">
-    <view class="box">
-      <text class="cart-count">111</text>
-      <image  class="icon" src="/static/images/ic_menu_shoping_nor.png"></image>
-    </view>
-  </view>
-  <view class="c">立即购买</view>
-  <view class="r">加入购物车</view>
-</view>
-
-</view>
-
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				
-			};
-		}
-	}
+export default {
+  data() {
+    return {
+      attribute: [],
+      brand: {},
+      comment: {},
+      gallery: [],
+      info: {},
+      issue: [],
+      productList: [],
+      specificationList: [],
+      userHasCollect: 0,
+      options: [
+        {
+          icon: 'headphones',
+          text: '客服',
+        },
+        {
+          icon: 'shop',
+          text: '店铺',
+          info: 2,
+          infoBackgroundColor: '#007aff',
+          infoColor: 'red',
+        },
+        {
+          icon: 'cart',
+          text: '购物车',
+          info: 2,
+        },
+      ],
+      buttonGroup: [
+        {
+          text: '加入购物车',
+          backgroundColor: '#ff0000',
+          color: '#fff',
+        },
+        {
+          text: '立即购买',
+          backgroundColor: '#ffa200',
+          color: '#fff',
+        },
+      ],
+      checkList: [],
+    }
+  },
+  onLoad(options) {
+    this.initData(options.cataId)
+  },
+  methods: {
+    async initData(id) {
+      const res = await uni.$http.get('/goods/detail?id=' + id)
+      console.log(res)
+      res.info.goods_desc = res.info.goods_desc.replaceAll('style=""', '')
+      res.info.goods_desc = res.info.goods_desc.replaceAll('<img ', '<img style="width:100%;"')
+      Object.keys(res).forEach(key => {
+        this[key] = res[key]
+      })
+      this.specificationList.forEach(item => {
+        this.checkList.push(item.valueList[0].id)
+      })
+    },
+    onClick(e) {
+      uni.showToast({
+        title: `点击${e.content.text}`,
+        icon: 'none',
+      })
+    },
+    buttonClick(e) {
+      console.log(e)
+      this.options[2].info++
+    },
+    imgShow(list, index) {
+      uni.previewImage({
+        urls: list.map(item => item.pic_url),
+        current: index,
+      })
+    },
+    changeTab(obj, idx) {
+      this.checkList.splice(idx, 1, obj.id)
+    },
+  },
+}
 </script>
 
 <style lang="scss">
+.fix-bot {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
 .container {
   margin-bottom: 100rpx;
 }
@@ -280,7 +268,8 @@
 }
 
 .service-policy .item {
-  background: url(http://nos.netease.com/mailpub/hxm/yanxuan-wap/p/20150730/style/img/icon-normal/servicePolicyRed-518d32d74b.png) 0 center no-repeat;
+  background: url(http://nos.netease.com/mailpub/hxm/yanxuan-wap/p/20150730/style/img/icon-normal/servicePolicyRed-518d32d74b.png)
+    0 center no-repeat;
   background-size: 10rpx;
   padding-left: 15rpx;
   display: flex;
@@ -348,7 +337,8 @@
   font-size: 25rpx;
   color: #f48f18;
   border-radius: 4px;
-  background: url(http://nos.netease.com/mailpub/hxm/yanxuan-wap/p/20150730/style/img/icon-normal/detailTagArrow-18bee52dab.png) 95% center no-repeat;
+  background: url(http://nos.netease.com/mailpub/hxm/yanxuan-wap/p/20150730/style/img/icon-normal/detailTagArrow-18bee52dab.png)
+    95% center no-repeat;
   background-size: 10.75rpx 18.75rpx;
 }
 
@@ -448,7 +438,8 @@
   width: 164rpx;
   height: 100.5rpx;
   line-height: 100.5rpx;
-  background: url(http://nos.netease.com/mailpub/hxm/yanxuan-wap/p/20150730/style/img/icon-normal/address-right-990628faa7.png) right center no-repeat;
+  background: url(http://nos.netease.com/mailpub/hxm/yanxuan-wap/p/20150730/style/img/icon-normal/address-right-990628faa7.png)
+    right center no-repeat;
   background-size: 52rpx;
 }
 
@@ -839,7 +830,7 @@
   width: 100%;
   height: 100%;
   position: fixed;
-  background: rgba(0, 0, 0, .5);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 8;
   bottom: 0;
   /* display: none; */
@@ -979,5 +970,4 @@
   text-align: center;
   line-height: 65rpx;
 }
-
 </style>
