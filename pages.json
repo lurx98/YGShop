@@ -1,0 +1,151 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "优购商城",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/cart/cart",
+			"style": {
+				"navigationBarTitleText": "购物车",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/catalog/catalog",
+			"style": {
+				"navigationBarTitleText": "分类",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/my/my",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/subject/subject",
+			"style": {
+				"navigationBarTitleText": "专题",
+				"enablePullDownRefresh": true
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F0F",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {},
+	"subPackages": [
+		{
+			"root": "pkgGood",
+			"name": "good",
+			"pages": [
+				{
+					"path": "list/list",
+					"style": {
+						"navigationBarTitleText": "列表",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "search/search",
+					"style": {
+						"navigationBarTitleText": "搜索",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "detail/detail",
+					"style": {
+						"navigationBarTitleText": "详情",
+						"enablePullDownRefresh": false
+					}
+				}
+			]
+		},
+		{
+			"root": "pkgUser",
+			"name": "user",
+			"pages": [
+				{
+					"path": "login/login",
+					"style": {
+						"navigationBarTitleText": "登录",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "reg/reg",
+					"style": {
+						"navigationBarTitleText": "注册",
+						"enablePullDownRefresh": false
+					}
+				}
+			]
+		},
+		{
+			"root": "pkgSubject",
+			"name": "subject",
+			"pages": [
+				{
+					"path": "subdetail/subdetail",
+					"style": {
+						"navigationBarTitleText": "专题详情",
+						"enablePullDownRefresh": false
+					}
+				}
+			]
+		},
+		{
+			"root": "pkgOrder",
+			"name": "order",
+			"pages": []
+		}
+	],
+	"tabBar": {
+		"backgroundColor": "#ffffff",
+		"color": "#000000",
+		"selectedColor": "#1989fa",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "/static/images/ic_menu_choice_nor.png",
+				"selectedIconPath": "/static/images/ic_menu_choice_pressed.png"
+			},
+			{
+				"pagePath": "pages/subject/subject",
+				"text": "专题",
+				"iconPath": "/static/images/ic_menu_topic_nor.png",
+				"selectedIconPath": "/static/images/ic_menu_topic_pressed.png"
+			},
+			{
+				"pagePath": "pages/catalog/catalog",
+				"text": "分类",
+				"iconPath": "/static/images/ic_menu_sort_nor.png",
+				"selectedIconPath": "/static/images/ic_menu_sort_pressed.png"
+			},
+			{
+				"pagePath": "pages/cart/cart",
+				"text": "购物车",
+				"iconPath": "/static/images/ic_menu_shoping_nor.png",
+				"selectedIconPath": "/static/images/ic_menu_shoping_pressed.png"
+			},
+			{
+				"pagePath": "pages/my/my",
+				"text": "我的",
+				"iconPath": "/static/images/ic_menu_me_nor.png",
+				"selectedIconPath": "/static/images/ic_menu_me_pressed.png"
+			}
+		]
+	}
+}

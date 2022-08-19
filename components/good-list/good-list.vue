@@ -1,0 +1,149 @@
+<template>
+  <view class="cate-item">
+    <view class="h" v-if="isCataShow">
+      <text class="name">分类名</text>
+      <text class="desc">分类名描述</text>
+    </view>
+    <view class="b">
+      <navigator
+        class="item"
+        :class="{ 'item-b': index % 2 === 1 }"
+        v-for="(item, index) in list"
+        :key="item.id"
+        :url="'/pkgGood/detail/detail?cataId=' + item.id"
+      >
+        <image class="img" :src="item.list_pic_url" background-size="cover"></image>
+        <text class="name">{{ item.name }}</text>
+        <text class="price">￥{{ item.retail_price }}</text>
+      </navigator>
+    </view>
+  </view>
+</template>
+
+<script>
+export default {
+  name: 'good-list',
+  props: {
+    isCataShow: {
+      type: Boolean,
+      default: false,
+    },
+    keyWords: {
+      type: String,
+    },
+    cateIdNum: {
+      type: [String, Number],
+    },
+  },
+  data() {
+    return {
+      queryData: {
+        keyword: this.keyWords,
+        categoryId: this.cateIdNum,
+        page: 1,
+        size: 10,
+      },
+      count: 1,
+      list: [],
+    }
+  },
+  created() {
+    this.initData()
+  },
+  methods: {
+    async initData() {
+      const { count, data } = await uni.$http.get('/goods/list', this.queryData)
+      this.count = count
+      this.list = data
+    },
+  },
+}
+</script>
+
+<style lang="scss">
+.cate-item {
+  margin-top: 100rpx;
+  position: flex;
+  height: auto;
+  overflow: hidden;
+}
+
+.cate-item .h {
+  height: 145rpx;
+  width: 750rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cate-item .h .name {
+  display: block;
+  height: 35rpx;
+  margin-bottom: 18rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.cate-item .h .desc {
+  display: block;
+  height: 24rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.cate-item .b {
+  width: 750rpx;
+  padding: 0 6.25rpx;
+  height: auto;
+  overflow: hidden;
+}
+
+.cate-item .list-filter {
+  height: 80rpx;
+  width: 100%;
+  background: #fff;
+  margin-bottom: 6.25rpx;
+}
+
+.cate-item .b .item {
+  float: left;
+  background: #fff;
+  width: 365rpx;
+  margin-bottom: 6.25rpx;
+  padding-bottom: 33.333rpx;
+  height: auto;
+  overflow: hidden;
+  text-align: center;
+}
+
+.cate-item .b .item-b {
+  margin-left: 6.25rpx;
+}
+
+.cate-item .item .img {
+  width: 302rpx;
+  height: 302rpx;
+}
+
+.cate-item .item .name {
+  display: block;
+  width: 365.625rpx;
+  height: 35rpx;
+  margin: 11.5rpx 0 22rpx 0;
+  text-align: center;
+  overflow: hidden;
+  padding: 0 20rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.cate-item .item .price {
+  display: block;
+  width: 365.625rpx;
+  height: 30rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #b4282d;
+}
+</style>
